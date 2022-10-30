@@ -1,141 +1,96 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react'
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  StyleSheet,
-  FlatList,
-} from 'react-native'
-import { useDispatch } from 'react-redux'
-import { useTheme } from '@/Hooks'
-import {
-  Location,
-  Notification,
-  SearchNormal1,
-  Setting4,
-} from 'iconsax-react-native'
-import { TextInput } from 'react-native-gesture-handler'
-
-// Static Data -----------------------------------
-// const petsCategory = [
-//   {
-//     name: 'Dog',
-//     key: 'dog',
-//     Icon:
-//   }
-// ]
+import React, { useState } from 'react'
+import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native'
+import { useStatic, useTheme } from '@/Hooks'
+import { HomePageHeader, NearByDogRow, PopularDogCard } from '@/Components'
+import { PopularDog } from '@/Hooks/useStatic'
 
 const HomeContainer = () => {
-  const { Fonts, Gutters, Layout, Colors, MetricsSizes, FontSize } = useTheme()
+  const { Colors, FontSize } = useTheme()
+  const { popularDogs } = useStatic()
+  const [popularDg, setPopularDg] = useState<PopularDog[]>(popularDogs)
+
+  // Utility functions ----------------------
+  const onLikePress = (index: number) => {
+    setPopularDg((prev: any) => {
+      let data = [...prev]
+      data[index].liked = !data[index].liked
+
+      return [...data]
+    })
+  }
 
   return (
     <ScrollView
-      style={Layout.fill}
-      contentContainerStyle={[
-        Layout.fill,
-        { backgroundColor: Colors.screenBackground },
-      ]}
+      contentContainerStyle={[{ backgroundColor: Colors.screenBackground }]}
     >
       {/* Header ----------------------------- */}
-      <View
-        style={[
-          styles.header,
-          styles.shadow,
-          { backgroundColor: Colors.white, shadowColor: Colors.primary },
-        ]}
-      >
-        <View style={[{ paddingHorizontal: 20 }]}>
-          {/* Header Top Row ------------------- */}
-          <View
+      <HomePageHeader />
+
+      {/* Body ------------------------------------ */}
+      <View style={[styles.bodyContainer]}>
+        {/* Popular Dogs ------------------------------ */}
+        <View>
+          <Text
             style={[
-              Layout.row,
-              Layout.alignItemsCenter,
-              Layout.justifyContentBetween,
+              {
+                fontSize: FontSize.large,
+                fontWeight: '700',
+                color: Colors.text,
+                paddingHorizontal: 20,
+              },
             ]}
           >
-            <View style={[]}>
-              <Text
-                style={[
-                  {
-                    fontSize: FontSize.large,
-                    fontWeight: '700',
-                    color: Colors.text,
-                  },
-                ]}
-              >
-                Hello Jane
-              </Text>
-              <View style={[Layout.row, Layout.alignItemsCenter]}>
-                <Location
-                  size={MetricsSizes.regular}
-                  color={Colors.primary}
-                  style={[Gutters.tinyRMargin]}
-                />
-                <Text
-                  style={[{ fontSize: FontSize.small, color: Colors.text }]}
-                >
-                  Hoululu, united state.
-                </Text>
-              </View>
-            </View>
-            <View
-              style={[
-                styles.circleIcon,
-                Layout.center,
-                styles.shadow,
-                { backgroundColor: Colors.white, shadowColor: Colors.primary },
-              ]}
-            >
-              <Notification
-                color={Colors.primary}
-                size={MetricsSizes.regular + 4}
+            Popular Dogs
+          </Text>
+
+          {/* dogs list --------------------------------- */}
+          <FlatList
+            contentContainerStyle={[
+              {
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+              },
+            ]}
+            horizontal
+            data={popularDg}
+            renderItem={({ item, index }) => (
+              <PopularDogCard
+                {...item}
+                index={index}
+                onLikePress={onLikePress}
               />
-            </View>
-          </View>
-
-          {/* Input Component */}
-          <View
+            )}
+            keyExtractor={({ name }) => name}
+          />
+        </View>
+        {/* Nearby Dog Store ------------------------------ */}
+        <View style={[{ marginTop: 10 }]}>
+          <Text
             style={[
-              Layout.row,
-              Layout.alignItemsCenter,
-              styles.inputContainer,
-              { backgroundColor: Colors.inputBackground },
+              {
+                fontSize: FontSize.large,
+                fontWeight: '700',
+                color: Colors.text,
+                paddingHorizontal: 20,
+              },
             ]}
           >
-            <SearchNormal1
-              size={MetricsSizes.large - 4}
-              color={Colors.primary}
-              style={[Gutters.tinyHMargin]}
-            />
-            <TextInput
-              style={[Layout.fill, Fonts.textRegular, { color: Colors.white }]}
-            />
-            <Pressable
-              style={[
-                Layout.fullHeight,
-                Layout.center,
-                // eslint-disable-next-line react-native/no-inline-styles
-                {
-                  backgroundColor: Colors.primary,
-                  paddingHorizontal: 16,
-                },
-              ]}
-            >
-              <Setting4 size={MetricsSizes.large - 6} color={Colors.white} />
-            </Pressable>
-          </View>
+            Nearby Dog Store
+          </Text>
+          {/* dogs list --------------------------------- */}
+          <FlatList
+            contentContainerStyle={[
+              {
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+              },
+            ]}
+            data={popularDg}
+            renderItem={({ item }) => <NearByDogRow {...item} />}
+            keyExtractor={({ name }) => name}
+          />
         </View>
-
-        {/* Pet Category ------------------------------- */}
-        <FlatList />
-      </View>
-      <View>
-        <Text>This is home screen</Text>
-        <Pressable>
-          <Text>this is button</Text>
-        </Pressable>
       </View>
     </ScrollView>
   )
@@ -159,14 +114,21 @@ const styles = StyleSheet.create({
     elevation: 9,
   },
   header: {
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    paddingVertical: 20,
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+    paddingTop: 20,
   },
   inputContainer: {
     borderRadius: 10,
     overflow: 'hidden',
     height: 42,
     marginTop: 11,
+  },
+  categoryList: {
+    paddingVertical: 15,
+  },
+
+  bodyContainer: {
+    paddingVertical: 40,
   },
 })

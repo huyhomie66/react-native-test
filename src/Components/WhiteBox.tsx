@@ -1,22 +1,29 @@
-import { View, StyleSheet, ViewProps } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  ViewProps,
+  PressableProps,
+  Pressable,
+} from 'react-native'
 import React, { FC } from 'react'
 import { useTheme } from '@/Hooks'
 
-interface Props extends ViewProps {}
+interface Props extends PressableProps {}
 
 const WhiteBox: FC<Props> = ({ children, ...props }) => {
   const { Colors } = useTheme()
   return (
-    <View
+    <Pressable
       {...props}
       style={[
         styles.box,
         { backgroundColor: Colors.white, shadowColor: Colors.primary },
+        // @ts-ignore
         props.style,
       ]}
     >
       {children}
-    </View>
+    </Pressable>
   )
 }
 
