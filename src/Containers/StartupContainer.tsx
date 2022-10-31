@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { ActivityIndicator, View, Text } from 'react-native'
 import { useTheme } from '@/Hooks'
-import { setDefaultTheme } from '@/Store/Theme'
 import { navigateAndSimpleReset } from '@/Navigators/utils'
 
 const StartupContainer = () => {
@@ -13,7 +12,6 @@ const StartupContainer = () => {
         resolve(true)
       }, 2000),
     )
-    await setDefaultTheme({ theme: 'default', darkMode: null })
     navigateAndSimpleReset('Main')
   }
 
